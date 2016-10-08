@@ -37,15 +37,19 @@ def main():
 
     #|f(x)|, n=2, alpha=1
     x_opt, iterationsNewthon = newtonMethod(1., f, f_x)
+    print('Root found by Newthon method = {}'.format(x_opt))
     x_opt, iterationsDich = dichotomyMethod(0.5, 1., f)
+    print('Root found by dichotomy method = {}'.format(x_opt))
 
     plt.xlabel('Number of iterations')
     plt.ylabel('|f(x)|')
-    plt.plot(range(1, len(iterationsNewthon) + 1), np.abs(iterationsNewthon), 'b-o', label='Newthon method')
-    plt.plot(range(1, len(iterationsDich) + 1), np.abs(iterationsDich), 'g-o', label='Dichotomy method')
+    plt.plot(range(1, len(iterationsNewthon) + 1), np.abs(iterationsNewthon), \
+        'b-o', label='Newthon method')
+    plt.plot(range(1, len(iterationsDich) + 1), np.abs(iterationsDich), 'g-o', \
+        label='Dichotomy method')
     plt.grid()
     plt.legend(loc = 'best', fontsize = 10)
-    plt.savefig('../pictures/lab1_convergence.png', format = 'png', dpi = 300)
+    plt.savefig('../pictures/lab1_convergence.png', format = 'png', dpi = 200)
 
     #x(alpha), n=2,4,6
     f = lambda x, n, alpha: x**(n + 1) + x - alpha
@@ -58,13 +62,16 @@ def main():
     plt.ylabel('x')
 
     for i in range(1, 4):
-        roots = [newtonMethod(alpha, lambda x: f(x, i*2, alpha), lambda x: f_x(x, i*2, alpha))[0] \
-            for alpha in alphaGrid]
+        roots = [newtonMethod(alpha, lambda x: f(x, i*2, alpha), \
+            lambda x: f_x(x, i*2, alpha))[0] for alpha in alphaGrid]
         plt.plot(alphaGrid, roots, colors[i-1] + '-o', label='N=' + str(i*2))
+
+    plt.plot(alphaGrid, np.power(alphaGrid, [1./3]*len(alphaGrid)), \
+        colors[3] + '--', label='alpha^1/3')
 
     plt.grid()
     plt.legend(loc = 'best', fontsize = 10)
-    plt.savefig('../pictures/lab1_roots.png', format = 'png', dpi = 300)
+    plt.savefig('../pictures/lab1_roots.png', format = 'png', dpi = 200)
 
 
 if __name__ == '__main__':
