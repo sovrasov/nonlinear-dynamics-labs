@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def eulerMethod(f, a, b, f_0, step):
-    numSteps = int((b - a) / step)
+    numSteps = int((b - a) / step - 0.5)
 
     xValues = [0.]*(numSteps + 1)
     tValues = [0.]*(numSteps + 1)
@@ -19,7 +19,7 @@ def eulerMethod(f, a, b, f_0, step):
     return tValues, xValues
 
 def rungeKuttaMethod(f, a, b, f_0, step):
-    numSteps = int((b - a) / step)
+    numSteps = int((b - a) / step - 0.5)
 
     xValues = [0.]*(numSteps + 1)
     tValues = [0.]*(numSteps + 1)
@@ -37,13 +37,12 @@ def rungeKuttaMethod(f, a, b, f_0, step):
 
     return tValues, xValues
 
-def plotError(steps, tValues, errValues, outputName, isLogYAxis=False):
+def plotError(steps, tValues, errValues, outputName):
     colors = ['r', 'g', 'b', 'c']
 
     plt.xlabel('t')
-    plt.ylabel('error(t)')
-    if isLogYAxis:
-        plt.yscale('log')
+    plt.ylabel('lg(error(t))')
+    plt.yscale('log')
 
     for i, step in enumerate(steps):
         plt.plot(tValues[i], errValues[i], \
@@ -66,7 +65,7 @@ def main():
         errValues.append(np.abs(xValues - np.exp(timeGrid)))
         tValues.append(np.array(timeGrid))
 
-    plotError(steps, tValues, errValues, '../pictures/lab3_exp_plus.png', True)
+    plotError(steps, tValues, errValues, '../pictures/lab3_exp_plus.png')
 
     f = lambda x, t: -x
 
@@ -77,7 +76,7 @@ def main():
         errValues.append(np.abs(xValues - np.exp(-np.array(timeGrid))))
         tValues.append(np.array(timeGrid))
 
-    plotError(steps, tValues, errValues, '../pictures/lab3_exp_minus.png', True)
+    plotError(steps, tValues, errValues, '../pictures/lab3_exp_minus.png')
 
     f = lambda x, t: np.array([x[1], -x[0]])
 
@@ -85,22 +84,27 @@ def main():
     errValues = []
     for i, step in enumerate(steps):
         timeGrid, xValues = eulerMethod(f, 0., 20., np.array([1.,0.]), step)
-        errValues.append(np.abs(np.array(xValues)[:,0] - np.cos(np.array(timeGrid))))
+        errValues.append(np.abs(np.array(xValues)[:,0] \
+            - np.cos(np.array(timeGrid))))
         tValues.append(np.array(timeGrid))
 
     plotError(steps, tValues, errValues, '../pictures/lab3_cons_system.png')
 
-    f = lambda x, t: np.array([-x[1] - x[2], x[0] + 0.3*x[1], 0.3 + (x[0] - 5.7)*x[2]])
+    f = lambda x, t: np.array([-x[1] - x[2], x[0] + 0.3*x[1], \
+        0.3 + (x[0] - 5.7)*x[2]])
 
     tValues = []
     errValues = []
     for i, step in enumerate(steps):
-        timeGrid, xValues = rungeKuttaMethod(f, 0., 100., np.array([1.,0., 1.]), step)
-        _, xValues2 = rungeKuttaMethod(f, 0., 100., np.array([1.,0., 1.]), step / 2.)
-        errValues.append(np.sum(np.abs(np.array(xValues) - np.array(xValues2)[::2]), axis=1))
+        timeGrid, xValues = \
+            rungeKuttaMethod(f, 0., 100., np.array([1.,0., 100.]), step)
+        _, xValues2 =  \
+            rungeKuttaMethod(f, 0., 100., np.array([1.,0., 100.]), step / 2.)
+        errValues.append(np.sum(np.abs(np.array(xValues) - \
+            np.array(xValues2)[::2]), axis=1))
         tValues.append(np.array(timeGrid))
 
-    plotError(steps, tValues, errValues, '../pictures/lab3_rossler_system.png', True)
+    plotError(steps, tValues, errValues, '../pictures/lab3_rossler_system.png')
 
 if __name__ == '__main__':
     main()
