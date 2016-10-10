@@ -83,7 +83,7 @@ def main():
     tValues = []
     errValues = []
     for i, step in enumerate(steps):
-        timeGrid, xValues = eulerMethod(f, 0., 20., np.array([1.,0.]), step)
+        timeGrid, xValues = eulerMethod(f, 0., 200., np.array([1.,0.]), step)
         errValues.append(np.abs(np.array(xValues)[:,0] \
             - np.cos(np.array(timeGrid))))
         tValues.append(np.array(timeGrid))
@@ -97,9 +97,9 @@ def main():
     errValues = []
     for i, step in enumerate(steps):
         timeGrid, xValues = \
-            rungeKuttaMethod(f, 0., 100., np.array([1.,0., 100.]), step)
+            rungeKuttaMethod(f, 0., 1000., np.array([1.,0., 100.]), step)
         _, xValues2 =  \
-            rungeKuttaMethod(f, 0., 100., np.array([1.,0., 100.]), step / 2.)
+            rungeKuttaMethod(f, 0., 1000., np.array([1.,0., 100.]), step / 2.)
         errValues.append(np.sum(np.abs(np.array(xValues) - \
             np.array(xValues2)[::2]), axis=1))
         tValues.append(np.array(timeGrid))
