@@ -40,8 +40,8 @@ def rungeKuttaMethod(f, a, b, f_0, step):
 def plotError(steps, tValues, errValues, outputName):
     colors = ['r', 'g', 'b', 'c']
 
-    plt.xlabel('t')
-    plt.ylabel('lg(error(t))')
+    plt.xlabel('$t$')
+    plt.ylabel('$lg(\\xi(t))$')
     plt.yscale('log')
 
     for i, step in enumerate(steps):
