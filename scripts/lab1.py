@@ -42,7 +42,7 @@ def main():
     print('Root found by dichotomy method = {}'.format(x_opt))
 
     plt.xlabel('Number of iterations')
-    plt.ylabel('|f(x)|')
+    plt.ylabel('$|f(x)|$')
     plt.plot(range(1, len(iterationsNewthon) + 1), np.abs(iterationsNewthon), \
         'b-o', label='Newthon method')
     plt.plot(range(1, len(iterationsDich) + 1), np.abs(iterationsDich), 'g-o', \
@@ -58,16 +58,16 @@ def main():
     colors = ['r', 'g', 'b', 'c']
 
     plt.clf()
-    plt.xlabel('alpha')
-    plt.ylabel('x')
+    plt.xlabel('$\\alpha$')
+    plt.ylabel('$x$')
 
     for i in range(1, 4):
         roots = [newtonMethod(alpha, lambda x: f(x, i*2, alpha), \
             lambda x: f_x(x, i*2, alpha))[0] for alpha in alphaGrid]
-        plt.plot(alphaGrid, roots, colors[i-1] + '-o', label='N=' + str(i*2))
+        plt.plot(alphaGrid, roots, colors[i-1] + '-o', label='$N=' + str(i*2) + '$')
 
     plt.plot(alphaGrid, np.power(alphaGrid, [1./3]*len(alphaGrid)), \
-        colors[3] + '--', label='alpha^1/3')
+        colors[3] + '--', label='$\\alpha^{1/3}$')
 
     plt.grid()
     plt.legend(loc = 'best', fontsize = 10)
