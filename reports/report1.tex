@@ -1,14 +1,11 @@
 \documentclass[a4paper]{article}
-\usepackage{fontspec}
+\usepackage[utf8]{inputenc}
 \usepackage[russian]{babel}
 \usepackage{listings}
 \usepackage[a4paper]{geometry}
 \usepackage{indentfirst}
 \usepackage{graphicx}
 \usepackage{caption}
-
-\setmainfont{CMU Serif}
-\setsansfont{CMU Sans Serif}
 
 \begin{document}
 
@@ -50,6 +47,38 @@
   \includegraphics[width=0.75\textwidth]{../pictures/lab1_roots.png}
   \caption{Зависимость корня полинома \(f(x)\) от параметра при различных значениях степени}
   \label{fig:roots}
+\end{figure}
+
+\section{Поиск бифуркационного значения параметра системы}
+При рассмотрении системы
+\begin{displaymath}
+	\left\{
+  \begin{array}{lr}
+    \dot x = \frac{\alpha}{1+y^2}\\
+		\dot y = \frac{\alpha}{1+x^2}
+  \end{array}
+\right.
+\end{displaymath}
+было выяснено, что критерием бифуркации является изменение количества корней у
+полинома \(g(x)=x^5-\alpha x^4 +2x^3 - 2\alpha x^2 + (\alpha^2+1)x-\alpha\).
+Необходимо обнаружить бифуркацию численно и построить зависимость корней \(g(x)\)
+от \(\alpha\).
+
+Зависимость была построена для \(\alpha \in [0;10]\). При \(\alpha=10\) с помощью
+запусков метода Ньютона из различных псевдослучайно сгенерированных точек были найдены
+все корни \(g(x)\). Затем, при движении по сетке в направлении \(\alpha=0\),
+значения корней в предыдущем узле сетки использовались как начальные приближения
+в методе Ньютона для поиска корней в текущем узле.
+
+Как видно из рис. \ref{fig:roots2}, в окрестности точки \(\alpha=2\) происходит
+бифуркация и одно состояние равновесия системы превращается в три, которые удаляются
+друг от друга с ростом \(\alpha\).
+
+\begin{figure}[ht]
+	\center
+  \includegraphics[width=0.75\textwidth]{../pictures/lab1_bifurcation.png}
+  \caption{Зависимость корней полинома \(g(x)\) от параметра}
+  \label{fig:roots2}
 \end{figure}
 
 \section{Исходный код}

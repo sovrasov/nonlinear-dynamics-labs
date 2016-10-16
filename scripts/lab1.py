@@ -30,6 +30,15 @@ def dichotomyMethod(x_l, x_r, f, eps = 0.001):
 
     return (x_l + x_l) / 2., values_trace
 
+def deleteSimilar(array, value, eps = 0.001):
+    filteredArray = []
+
+    for x in array:
+        if abs(x - value) > eps:
+            filteredArray.append(x)
+
+    return filteredArray
+
 def main():
 
     f = lambda x: x**3 + x - 1
@@ -64,7 +73,7 @@ def main():
     for i in range(1, 4):
         roots = [newtonMethod(alpha, lambda x: f(x, i*2, alpha), \
             lambda x: f_x(x, i*2, alpha))[0] for alpha in alphaGrid]
-        plt.plot(alphaGrid, roots, colors[i-1] + '-o', label='$N=' + str(i*2) + '$')
+        plt.plot(alphaGrid, roots, colors[i-1] + '-', label='$N='+str(i*2)+'$')
 
     plt.plot(alphaGrid, np.power(alphaGrid, [1./3]*len(alphaGrid)), \
         colors[3] + '--', label='$\\alpha^{1/3}$')
@@ -73,6 +82,42 @@ def main():
     plt.legend(loc = 'best', fontsize = 10)
     plt.savefig('../pictures/lab1_roots.png', format = 'png', dpi = 200)
 
+    plt.clf()
+    plt.xlabel('$\\alpha$')
+    plt.ylabel('$x$')
+
+    f = lambda x, alpha: x**5 - alpha*x**4 + 2*x**3 - 2*alpha*x**2 \
+        + (alpha**2 + 1)*x - alpha
+    f_x = lambda x, alpha: 5*x**4 - 4*alpha*x**3 + 6*x**2 - \
+        4*alpha*x + alpha**2 + 1.
+
+    mid = np.power(alphaGrid[-1], 1./3.)
+    initialPoints = [np.random.uniform(mid - 100., mid + 100.) for _ in range(100)]
+    roots = [newtonMethod(x0, lambda x: f(x, alphaGrid[-1]), \
+        lambda x: f_x(x, alphaGrid[-1]))[0] for x0 in initialPoints]
+
+    filteredRoots = []
+    while len(roots) != 0:
+        filteredRoots.append(roots[0])
+        roots = deleteSimilar(roots, filteredRoots[-1])
+
+    alphaGrid = np.linspace(0., 10., 300)
+    filteredRoots = sorted(filteredRoots)
+    xValues = np.array([[0.]*len(alphaGrid)]*len(filteredRoots))
+
+    for i in reversed(range(len(alphaGrid))):
+        newRoots = []
+        for j in range(len(filteredRoots)):
+            newRoots.append(newtonMethod(filteredRoots[j], \
+                lambda x: f(x, alphaGrid[i]), lambda x: f_x(x, alphaGrid[i]))[0])
+            xValues[j][i] = newRoots[j]
+        filteredRoots = newRoots
+
+    for i, values in enumerate(xValues):
+        plt.plot(alphaGrid, values, colors[0] + '-')
+
+    plt.grid()
+    plt.savefig('../pictures/lab1_bifurcation.png', format = 'png', dpi = 200)
 
 if __name__ == '__main__':
     main()
