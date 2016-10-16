@@ -37,7 +37,7 @@ def main():
             else:
                 tValues.append(np.nan)
 
-        plt.plot(alphaGrid, tValues, colors[i-1] + '-o', label='$N=' + str(i*2) + '$')
+        plt.plot(alphaGrid, tValues, colors[i-1]+'-o', label='$N='+str(i*2)+'$')
 
     plt.grid()
     plt.legend(loc = 'best', fontsize = 10)
