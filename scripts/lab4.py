@@ -13,36 +13,45 @@ def getGUE(size):
         1j*np.random.normal(0., 1., (size, size)))
     return 0.5*(a + a.getH())
 
-def plotHist(data, xLabel, yLabel, fileName, color):
+def plotRhoHist(data, xLabel, yLabel, fileName, color):
     plt.xlabel(xLabel)
     plt.ylabel(yLabel)
-    n, bins, patches = plt.hist(data, 50, normed = 1,
+    n, bins, patches = plt.hist(data, 50, normed = True,
         facecolor = color, alpha = 0.75)
+
+    c = np.amax(n) / 2.
+    f = np.vectorize(lambda x: c*np.sqrt(4. - x**2))
+    lGrid = np.linspace(-2., 2., 100)
+    plt.plot(lGrid, f(lGrid), color[0] + '-')
+
     plt.grid()
     plt.savefig(fileName, format = 'png', dpi = 200)
     plt.clf()
+
+def plotHist():
+    pass
 
 def main():
 
     np.random.seed(10)
 
     size = 100
-    nImpls = 100
+    nImpls = 300
     nBins = 100
 
     goeEigens = []
     gueEigens = []
 
     for i in range(nImpls):
-        goeEigens.append(np.sort(np.linalg.eig(getGOE(size))[0]))
-        gueEigens.append(np.sort(np.real(np.linalg.eig(getGUE(size))[0])))
+        goeEigens.append(np.linalg.eigvalsh(getGOE(size)))
+        gueEigens.append(np.real(np.linalg.eigvalsh(getGUE(size))))
 
     goeAllEigens = np.array(goeEigens).reshape(nImpls*size)
     gueAllEigens = np.array(gueEigens).reshape(nImpls*size)
 
-    plotHist(goeAllEigens / np.sqrt(size), r'$\lambda$', r'$\rho(\lambda)$',
+    plotRhoHist(goeAllEigens / np.sqrt(size), r'$\lambda$', r'$\rho(\lambda)$',
         '../pictures/lab4_goe_eig_hist.png', 'green')
-    plotHist(gueAllEigens / np.sqrt(size), r'$\lambda$', r'$\rho(\lambda)$',
+    plotRhoHist(gueAllEigens / np.sqrt(size), r'$\lambda$', r'$\rho(\lambda)$',
         '../pictures/lab4_gue_eig_hist.png', 'red')
 
     goeSplits = []
@@ -58,23 +67,36 @@ def main():
     goeSplits = np.array(goeSplits).reshape(nImpls*len(goeSplits[0]))
     gueSplits = np.array(gueSplits).reshape(nImpls*len(gueSplits[0]))
 
-    plt.xlabel('$s$')
-    plt.ylabel(r'$p(s)$')
-    n, bins, patches = plt.hist(goeSplits, 50, normed = 1,
+    plt.xlabel(r'$\bar{s}$')
+    plt.ylabel(r'$p(\bar{s})$')
+    n, bins, patches = plt.hist(goeSplits, 100, normed = True,
         facecolor = 'green', alpha = 0.75)
+
+    f = lambda x: x*np.exp(-np.pi / 4. * x**2)
+    c = np.amax(n) / f(2. / np.pi) #np.pi / 2.
+    f = np.vectorize(lambda x: c*x*np.exp(-np.pi / 4. * x**2))
+    sGrid = np.linspace(np.amin(bins), np.amax(bins), 200)
+    plt.plot(sGrid, f(sGrid), 'g-')
+
+    print(np.amax(n), f(2. / np.pi))
     plt.grid()
     plt.savefig('../pictures/lab4_goe_split_hist.png', format = 'png', dpi = 200)
     plt.clf()
 
-    plt.xlabel('$s$')
-    plt.ylabel(r'$p(s)$')
-    n, bins, patches = plt.hist(gueSplits, 50, normed = 1,
+    plt.xlabel(r'$\bar{s}$')
+    plt.ylabel(r'$p(\bar{s})$')
+    n, bins, patches = plt.hist(gueSplits, 100, normed = True,
         facecolor = 'red', alpha = 0.75)
+
+    f = lambda x: x**2*np.exp(-4. / np.pi * x**2)
+    c = np.amax(n) / f(np.sqrt(np.pi) / 2.) #32. / np.pi**2
+    f = np.vectorize(lambda x: c*x**2*np.exp(-4. /np.pi * x**2))
+    sGrid = np.linspace(np.amin(bins), np.amax(bins), 200)
+    plt.plot(sGrid, f(sGrid), 'r-')
+
     plt.grid()
     plt.savefig('../pictures/lab4_gue_split_hist.png', format = 'png', dpi = 200)
     plt.clf()
-
-#    print(np.amax(goeEigens), np.amin(goeEigens))
 
 if __name__ == '__main__':
     main()
