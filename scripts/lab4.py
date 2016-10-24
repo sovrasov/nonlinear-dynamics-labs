@@ -28,16 +28,27 @@ def plotRhoHist(data, xLabel, yLabel, fileName, color):
     plt.savefig(fileName, format = 'png', dpi = 200)
     plt.clf()
 
-def plotHist():
-    pass
+def plotLevelSpacingsHist(data, xLabel, yLabel, testDistr,
+        distrArgMax, fileName, color):
+    plt.xlabel(xLabel)
+    plt.ylabel(yLabel)
+    n, bins, _ = plt.hist(data, 100, normed = True,
+        facecolor = color, alpha = 0.75)
+
+    c = np.amax(n) / testDistr(distrArgMax)
+    f = np.vectorize(lambda x: c*testDistr(x))
+    sGrid = np.linspace(np.amin(bins), np.amax(bins), 200)
+    plt.plot(sGrid, f(sGrid), color[0] + '-')
+
+    plt.grid()
+    plt.savefig(fileName, format = 'png', dpi = 200)
+    plt.clf()
 
 def main():
 
     np.random.seed(10)
-
-    size = 100
-    nImpls = 300
-    nBins = 100
+    size = 1000
+    nImpls = 100
 
     goeEigens = []
     gueEigens = []
@@ -67,36 +78,13 @@ def main():
     goeSplits = np.array(goeSplits).reshape(nImpls*len(goeSplits[0]))
     gueSplits = np.array(gueSplits).reshape(nImpls*len(gueSplits[0]))
 
-    plt.xlabel(r'$\bar{s}$')
-    plt.ylabel(r'$p(\bar{s})$')
-    n, bins, patches = plt.hist(goeSplits, 100, normed = True,
-        facecolor = 'green', alpha = 0.75)
+    plotLevelSpacingsHist(goeSplits, r'$\bar{s}$', r'$p(\bar{s})$',
+        lambda x: x*np.exp(-np.pi * 0.25 * x**2), 2. / np.pi,
+        '../pictures/lab4_goe_split_hist.png', 'green')
 
-    f = lambda x: x*np.exp(-np.pi / 4. * x**2)
-    c = np.amax(n) / f(2. / np.pi) #np.pi / 2.
-    f = np.vectorize(lambda x: c*x*np.exp(-np.pi / 4. * x**2))
-    sGrid = np.linspace(np.amin(bins), np.amax(bins), 200)
-    plt.plot(sGrid, f(sGrid), 'g-')
-
-    print(np.amax(n), f(2. / np.pi))
-    plt.grid()
-    plt.savefig('../pictures/lab4_goe_split_hist.png', format = 'png', dpi = 200)
-    plt.clf()
-
-    plt.xlabel(r'$\bar{s}$')
-    plt.ylabel(r'$p(\bar{s})$')
-    n, bins, patches = plt.hist(gueSplits, 100, normed = True,
-        facecolor = 'red', alpha = 0.75)
-
-    f = lambda x: x**2*np.exp(-4. / np.pi * x**2)
-    c = np.amax(n) / f(np.sqrt(np.pi) / 2.) #32. / np.pi**2
-    f = np.vectorize(lambda x: c*x**2*np.exp(-4. /np.pi * x**2))
-    sGrid = np.linspace(np.amin(bins), np.amax(bins), 200)
-    plt.plot(sGrid, f(sGrid), 'r-')
-
-    plt.grid()
-    plt.savefig('../pictures/lab4_gue_split_hist.png', format = 'png', dpi = 200)
-    plt.clf()
+    plotLevelSpacingsHist(gueSplits, r'$\bar{s}$', r'$p(\bar{s})$',
+        lambda x: x**2*np.exp(-4. / np.pi * x**2), np.sqrt(np.pi) / 2.,
+        '../pictures/lab4_gue_split_hist.png', 'red')
 
 if __name__ == '__main__':
     main()
