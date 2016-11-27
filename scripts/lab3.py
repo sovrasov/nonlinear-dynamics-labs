@@ -14,6 +14,8 @@ def eulerMethod(f, a, b, f_0, step):
 
     for i in range(0, numSteps):
         xValues[i + 1] = xValues[i] + step*f(xValues[i], tValues[i])
+        if i == numSteps - 1:
+            step = b - tValues[i]
         tValues[i + 1] = tValues[i] + step
 
     return tValues, xValues
@@ -33,6 +35,8 @@ def rungeKuttaMethod(f, a, b, f_0, step):
         k3 = f(xValues[i] + step2*k2, tValues[i] + step2)
         k4 = f(xValues[i] + step*k3, tValues[i] + step)
         xValues[i + 1] = xValues[i] + step * (k1 + 2*k2 + 2*k3 +k4) / 6.
+        if i == numSteps - 1:
+            step = b - tValues[i]
         tValues[i + 1] = tValues[i] + step
 
     return tValues, xValues

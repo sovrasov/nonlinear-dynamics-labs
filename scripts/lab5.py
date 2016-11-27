@@ -25,7 +25,7 @@ def plotError(steps, errValues, yLabel, outputName):
     plt.yscale('log')
     plt.xscale('log')
 
-    plt.plot(steps, errValues, colors[0] + '-')
+    plt.plot(steps, errValues, colors[0] + '-o')
 
     plt.grid()
     plt.savefig(outputName, format = 'pdf')
@@ -35,17 +35,16 @@ def main():
 
     np.random.seed(10)
 
-    size = 3
+    size = 10
     H0 = getGUE(size)
     H1 = getGUE(size)
-
-    f = lambda x, t: -(H0 + H1*0.1*np.sin(2.*np.pi*t))*x / 1j
+    f = lambda x, t: -(H0 + H1*0.1*np.sin(2.*np.pi*t))*x * 1j
 
     epsPhi = []
     epsMu = []
 
-    steps = [0.1, 0.01, 0.001]
-
+    steps = np.logspace(-4, -1, 5, endpoint=True)
+    '''
     for step in steps:
         U = getPropagator(f, 1., size, step)
         U2 = getPropagator(f, 1., size, step / 2.)
@@ -60,7 +59,22 @@ def main():
         epsMu.append(np.linalg.norm(np.abs(values) - np.ones(len(values)), np.inf))
 
     plotError(steps, epsMu, r'$\varepsilon_{\mu}$', '../pictures/lab5_eigvals_error.pdf')
-    plotError(steps, epsPhi, r'$\varepsilon_{\phi}$', '../pictures/lab5_eigvecs_error.pdf')
+    plotError(steps, epsPhi, r'$\varepsilon_{\varphi}$', '../pictures/lab5_eigvecs_error.pdf')
+    '''
+    size = 3
+    H0 = getGUE(size)
+    H1 = getGUE(size)
+    f = lambda x, t: -(H0 + H1*0.1*np.sin(2.*np.pi*t))*x * 1j
+
+    U = getPropagator(f, 1., size, 1e-3)
+    _, vectors = np.linalg.eig(U)
+    energies = []
+    for i in range(len(vectors)):
+        vector = np.matrix(vectors[:,i])
+        energies.append(float(np.real(vector.getT()*np.conj(H0*vector))))
+
+    print(energies)
+
 
 if __name__ == '__main__':
     main()
