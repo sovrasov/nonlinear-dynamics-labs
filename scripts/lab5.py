@@ -5,7 +5,6 @@ from multiprocessing import Pool
 import dill
 import numpy as np
 import matplotlib.pyplot as plt
-from joblib import Parallel, delayed
 from lab4 import getGUE
 from lab3 import rungeKuttaMethod
 
@@ -23,9 +22,11 @@ def launchRK(f, a, b, f_0, step, idx):
 def getPropagator(f, T, size, step):
     U = [[]]*size
 
+    '''
     if size > 5:
-        pool = Pool()
+        pool = Pool(4)
         jobs = []
+        argsList = []
         for i in range(size):
             psi0 = np.zeros((size, 1))
             psi0[i] = 1.
@@ -36,11 +37,12 @@ def getPropagator(f, T, size, step):
             idx, uCol = job.get()
             U[idx] = uCol
     else:
-        for i in range(size):
-            psi0 = np.zeros((size, 1))
-            psi0[i] = 1.
-            uCol = rungeKuttaMethod(f, 0., T, psi0, step)[1][-1]
-            U[i] = uCol
+    '''
+    for i in range(size):
+        psi0 = np.zeros((size, 1))
+        psi0[i] = 1.
+        uCol = rungeKuttaMethod(f, 0., T, psi0, step)[1][-1]
+        U[i] = uCol
 
     return np.matrix(np.array(U).reshape(size, size)).getT()
 
@@ -105,36 +107,33 @@ def main():
     '''
 
     size = 100
-    nImpls = 60
+    nImpls = 120
     fValues = [0, 0.01, 0.1]
 
     energySetsToPlot = []
     spacingSetsToPlot = []
 
     for F in fValues:
-        H0 = getGUE(size)
-        H1 = getGUE(size)
-        f = lambda x, t: -(H0 + H1*F*np.sin(2.*np.pi*t))*x * 1j
-
         allEnergies = []
         allSplits = []
         for i in range(nImpls):
             H0 = getGUE(size)
             H1 = getGUE(size)
-            f = lambda x, t: -(H0 + H1*0.1*np.sin(2.*np.pi*t))*x * 1j
+            f = lambda x, t: -(H0 + H1*F*np.sin(2.*np.pi*t))*x * 1j
 
-            U = getPropagator(f, 1., size, 1e-2)
+            U = getPropagator(f, 1., size, 0.005)
             _, vectors = np.linalg.eig(U)
             energysSet = []
-            for i in range(len(vectors)):
-                vector = np.matrix(vectors[:,i])
-                energysSet.append(float(np.real((vector.getT())*(H0)*np.conj(vector))))
+            for j in range(len(vectors)):
+                vector = np.matrix(vectors[:,j])
+                energysSet.append(float(np.real(np.conj(vector.getT())*H0*vector)))
 
             energysSet = sorted(energysSet)
-            #print(energysSet)
             allEnergies.append(energysSet)
             allSplits.append( \
-                [energysSet[i+1] - energysSet[i] for i in range(len(energysSet) - 1)])
+                [energysSet[k+1] - energysSet[k] for k in range(len(energysSet) - 1)])
+
+            print('f = {}, #impl: {} '.format(F, i))
 
         allEnergies = np.array(allEnergies).reshape(nImpls*len(allEnergies[0]))
         allSplits = np.array(allSplits).reshape(nImpls*len(allSplits[0]))
