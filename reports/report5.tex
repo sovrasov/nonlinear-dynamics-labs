@@ -20,9 +20,10 @@
 \section{Оценка качества нахождения Флоке-базиса для уравнения Шрёдингера c
 периодическим по времени гамильтонианом}
 Рассматриваается уравнение Шрёдингера с периодической правой частью:
-\begin{displaymath}
+\begin{equation}
+	\label{eq:schrodinger_eq}
 	i \dot{\ket \psi} = H(t)\ket \psi, H(t)=H_0 + F \sin(\frac{2\pi}{T} t)H_1,
-\end{displaymath}
+\end{equation}
 в котором \(H_0, H_1\) --- GUE матрицы.
 
 Для нахождения Флоке-базиса в момент времени \(T\) используется матрица-пропагатор \(U(T)\).
@@ -69,51 +70,78 @@
 \section{Количественные характеристики решений уравнения Шрёдингера c
 периодическим по времени гамильтонианом}
 
-\begin{figure}[H]
-	\center
-	\includegraphics[width=0.75\textwidth]{../pictures/{lab5_eigens_spacings_histF=0.01}.pdf}
-	\caption{Оценка ошибки нахождения собственныx векторов матрицы-пропагатора}
-	\label{fig:eigvecs_error}
-\end{figure}
-\begin{figure}[H]
-	\center
-	\includegraphics[width=0.75\textwidth]{../pictures/{lab5_eigens_spacings_histF=0.1}.pdf}
-	\caption{Оценка ошибки нахождения собственныx векторов матрицы-пропагатора}
-	\label{fig:eigvecs_error}
-\end{figure}
+Для периодического по времени гамильтониана из (\ref{eq:schrodinger_eq}) можно ввести
+аналог энегрии стационарной системы: \(E_\alpha(t)=\bra{\varphi_\alpha(t)}H(t)\ket{\varphi_\alpha(t)}\),
+где \(\alpha\) --- индекс Флоке-вектора. Будем рассматривать величниу \(E_\alpha(0)\),
+тогда \(\varphi_\alpha(0)\) является собственным вектором пропагатора \(U(T)\).
 
-\begin{figure}[H]
-	\center
-	\includegraphics[width=0.75\textwidth]{../pictures/{lab5_eigens_spacings_histF=1}.pdf}
-	\caption{Оценка ошибки нахождения собственныx векторов матрицы-пропагатора}
-	\label{fig:eigvecs_error}
-\end{figure}
+Для изучения распределения величины \(E_\alpha(0)\) (квазиэнергии нестационарной системы)
+при значениях \(F\in\{0.01,0.1,1\}\) были сгенерировынны 120 реализаций пар матриц
+\((H_0, H_1)\) из (\ref{eq:schrodinger_eq}) размерности 100.
+Перед построением нормированных гистограмм, как и в случае стационарной системы,
+квазиэнергии были умножены на коэффициент на \(\frac{1}{\sqrt{N}}\), чтобы их спектр
+не зависел от размерности системы.
+
+На рис. \ref{fig:floquet_energies_f_0_01}, \ref{fig:floquet_energies_f_0_1}, \ref{fig:floquet_energies_f_1}
+можно увидеть, что с ростом \(F\) спектр начинает сосредотачивается в окрестности \(0\)
+(то есть при нарастании отличия гамильтониана от стационарного): при \(F=0.01\) спектр
+квазиэнергий почти не отличается от спектра энергий стационарной системы, а при \(F=1\)
+имеется явный пик распределения вблизи \(0\).
 
 \begin{figure}[H]
 	\center
 	\includegraphics[width=0.75\textwidth]{../pictures/{lab5_eigens_histF=0.01}.pdf}
-	\caption{Оценка ошибки нахождения собственныx векторов матрицы-пропагатора}
-	\label{fig:eigvecs_error}
+	\caption{Распределение энергий Флоке-векторов гамильтониана при \(F=0.01\)}
+	\label{fig:floquet_energies_f_0_01}
 \end{figure}
 
 \begin{figure}[H]
 	\center
 	\includegraphics[width=0.75\textwidth]{../pictures/{lab5_eigens_histF=0.1}.pdf}
-	\caption{Оценка ошибки нахождения собственныx векторов матрицы-пропагатора}
-	\label{fig:eigvecs_error}
+	\caption{Распределение энергий Флоке-векторов гамильтониана при \(F=0.1\)}
+	\label{fig:floquet_energies_f_0_1}
 \end{figure}
 
 \begin{figure}[H]
 	\center
 	\includegraphics[width=0.75\textwidth]{../pictures/{lab5_eigens_histF=1}.pdf}
-	\caption{Оценка ошибки нахождения собственныx векторов матрицы-пропагатора}
-	\label{fig:eigvecs_error}
+	\caption{Распределение энергий Флоке-векторов гамильтониана при \(F=1\)}
+	\label{fig:floquet_energies_f_1}
 \end{figure}
 
+Как и в стационарном случае, наряду с самими квазиэнергиями
+рассматривается и их расщепление, определяемое по формуле:
+\(s_\alpha = E(0)_{\alpha+1}-E(0)_\alpha, i=\overline{1,N-1}\). По полученным
+ранее реализациям были построены гистограммы нормированных расщеплений:
+\(\bar s_\alpha =s_\alpha/\langle s \rangle>\), где \(\langle s\rangle\) --- средняя
+величина расщепления. Из рис. \ref{fig:floquet_energies_spacing_f_0_01},
+\ref{fig:floquet_energies_spacing_f_0_1}, \ref{fig:floquet_energies_spacing_f_1}
+видно, что для гамильтониана, близкого к стационарному, распределения имеет удалённый
+от нуля пик, но при увеличении \(F\) этот пик смещается влево, что говорит о
+росте плотности спектра квазиэнегий.
+
+\begin{figure}[H]
+	\center
+	\includegraphics[width=0.75\textwidth]{../pictures/{lab5_eigens_spacings_histF=0.01}.pdf}
+	\caption{Распределение расщепления энергий Флоке-векторов гамильтониана при \(F=0.01\)}
+	\label{fig:floquet_energies_spacing_f_0_01}
+\end{figure}
+
+\begin{figure}[H]
+	\center
+	\includegraphics[width=0.75\textwidth]{../pictures/{lab5_eigens_spacings_histF=0.1}.pdf}
+	\caption{Распределение расщепления энергий Флоке-векторов гамильтониана при \(F=0.1\)}
+	\label{fig:floquet_energies_spacing_f_0_1}
+\end{figure}
+
+\begin{figure}[H]
+	\center
+	\includegraphics[width=0.75\textwidth]{../pictures/{lab5_eigens_spacings_histF=1}.pdf}
+	\caption{Распределение расщепления энергий Флоке-векторов гамильтониана при \(F=1\)}
+	\label{fig:floquet_energies_spacing_f_1}
+\end{figure}
 
 \section{Исходный код}
 \lstinputlisting[language=Python, numbers=left]{../scripts/lab5.py}
-
-
 
 \end{document}
