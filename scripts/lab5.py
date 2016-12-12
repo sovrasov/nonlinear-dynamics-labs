@@ -60,13 +60,13 @@ def plotError(steps, errValues, yLabel, outputName):
     plt.savefig(outputName, format = 'pdf')
     plt.clf()
 
-def plotHist(data, xLabel, yLabel, fileName, color):
+def plotHist(data, xLabel, yLabel, fileName, color, valRange):
     colors = ['blue', 'green', 'red']
     plt.xlabel(xLabel)
     plt.ylabel(yLabel)
 
     plt.hist(data, 50, normed = True,
-        facecolor = color, alpha = 0.75)
+        facecolor = color, alpha = 0.75, range = valRange)
 
     plt.grid()
     plt.savefig(fileName, format = 'pdf')
@@ -108,10 +108,7 @@ def main():
 
     size = 100
     nImpls = 120
-    fValues = [0, 0.01, 0.1]
-
-    energySetsToPlot = []
-    spacingSetsToPlot = []
+    fValues = [1]
 
     for F in fValues:
         allEnergies = []
@@ -144,10 +141,11 @@ def main():
         spacingSetsToPlot.append(allSplits)
 
         plotHist(allEnergies, r'$E$', r'$\rho(E)$',
-            '../pictures/lab5_eigens_hist' + 'F=' + str(F) +'.pdf', 'red')
+            '../pictures/lab5_eigens_hist' + 'F=' + str(F) +'.pdf', 'red', (-3, 3))
 
         plotHist(allSplits, r'$s$', r'$p(s)$',
-            '../pictures/lab5_eigens_spacings_hist' + 'F=' + str(F) + '.pdf', 'green')
+            '../pictures/lab5_eigens_spacings_hist' + 'F=' + str(F) + '.pdf', \
+                'green', (0, 8))
 
 if __name__ == '__main__':
     main()
