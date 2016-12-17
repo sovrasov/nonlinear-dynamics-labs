@@ -8,9 +8,12 @@ from lab1 import deleteSimilar
 
 def computeImage(x_0, r, n):
     x = x_0
+    lyapunov_characteristic = 0.
     for i in range(n):
         x = (r - x)*x
-    return x
+        logFx = np.log(abs(r - 2.*x))
+        lyapunov_characteristic += logFx
+    return x, lyapunov_characteristic / n
 
 def filterArray(array, eps):
     filteredArray = array
@@ -25,29 +28,17 @@ def main():
     nIterations = 1500
     nImpls = 120
     rValues = np.linspace(1e-3, 4, 1000)
-    xStartValues = np.random.rand(nImpls)*3.#np.linspace(1e-10, 2., nImpls)
+    xStartValues = np.random.rand(nImpls)
     lConsts = np.zeros((len(rValues), 1))
 
-    '''
-    for i, x in enumerate(xStartValues):
-        endPoints = []
-        for r in rValues:
-            endPoints.append(computeImage(x, r, 1000))
-        plt.plot(rValues, endPoints, 'b o', markersize=2)
-    '''
-
     xFinishPoints = np.zeros((len(rValues), nImpls))
-    for i, r in enumerate(rValues):
-        for j in range(nImpls):
-            xFinal = computeImage(xStartValues[j], r, nIterations)
+    for j in range(nImpls):
+        for i, r in enumerate(rValues):
+            xFinal, characteristic = computeImage(xStartValues[j], r, nIterations)
             xFinishPoints[i][j] = xFinal
-            if xFinal != np.inf:
-                multiplicator = np.log(abs(r - 2.*xFinal))
-                if multiplicator != np.inf:
-                    lConsts[i] += multiplicator
+            lConsts[i] += characteristic
+
     lConsts /= nImpls
-    #print(lConsts)
-    print("Computations finished")
     rChaos = rValues[np.argmax(lConsts >= 0.)]
     print('Edge of the chaos: r = {}'.format(rChaos))
 
@@ -60,9 +51,7 @@ def main():
         plt.plot([r], valuesToPlot.reshape((1, len(valuesToPlot))), \
             'b o', markersize = 1)
 
-    #for i in range(nImpls):
-    #    plt.plot(rValues, xFinishPoints[:,i], 'b o', markersize = 1)
-
+    plt.axvline(x=rChaos, color='b', linestyle='--')
     plt.grid()
     plt.savefig('../pictures/lab6_bifurcation_diagram.pdf', format = 'pdf')
     plt.clf()
