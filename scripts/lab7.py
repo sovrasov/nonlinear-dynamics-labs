@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import time
+
 import numpy as np
 import matplotlib.pyplot as plt
+
 from lab3 import rungeKuttaMethod
 
 
@@ -19,11 +22,11 @@ def gillespie_solver(initial_point, max_time, inc_rules, dec_rules):
     times = [0.]
     while time < max_time:
         v_plus = []
-        for i, rule in enumerate(inc_rules):
-            v_plus.append(rule(x[i]))
+        for rule in inc_rules:
+            v_plus.append(rule(x))
         v_minus = []
-        for i, rule in enumerate(dec_rules):
-            v_minus.append(rule(x[i]))
+        for rule in dec_rules:
+            v_minus.append(rule(x))
         a_0 = np.sum(np.array(v_plus + v_minus))
         if a_0 <= 0:
             break
@@ -41,13 +44,17 @@ def gillespie_solver(initial_point, max_time, inc_rules, dec_rules):
 
     return times, x_s
 
+
 def main():
 
     np.random.seed(100)
 
     t_r, x_r = rungeKuttaMethod(lambda x, t: -x, 0., 10., 100., 1e-4)
 
-    t, x = gillespie_solver([100], 10, [lambda x: 0], [lambda x: x])
+    start = time.time()
+    t, x = gillespie_solver([100], 10, [lambda x: 0], [lambda x: x[0]])
+    end = time.time()
+    print('Gillespie time, 1d ', end - start)
 
     plt.xlabel('$t$')
     plt.ylabel('$x(t)$')
@@ -56,8 +63,33 @@ def main():
     plt.grid()
     plt.legend()
     plt.savefig('../pictures/lab7_eq_1.pdf', format = 'pdf')
+    plt.clf()
 
-    #t, x = gillespie_solver([100, 0], 100, [lambda x: 0], [lambda x: x])
+    t_r, x_r = rungeKuttaMethod(lambda x, t: np.array([2*(x[1] - x[0]**2), x[0]**2 - x[1]]),
+                                0., 6., np.array([100., 0]), 1e-4)
+
+    start = time.time()
+    t, x = gillespie_solver([100, 0], 6, [lambda x: 2*x[1], lambda x: x[0]**2],
+                            [lambda x: 2*x[0]**2, lambda x: x[1]])
+    end = time.time()
+    print('Gillespie time, 2d ', end - start)
+
+    plt.xlabel('$t$')
+    plt.ylabel('$x(t)$')
+    plt.plot(t, np.array(x)[:, 0], 'b-o', markersize=2, label='Gillespie solution')
+    plt.plot(t_r, np.array(x_r)[:, 0], 'r-', label='Mean solution')
+    plt.grid()
+    plt.legend()
+    plt.savefig('../pictures/lab7_eq_2_1.pdf', format = 'pdf')
+    plt.clf()
+
+    plt.xlabel('$t$')
+    plt.ylabel('$x_2(t)$')
+    plt.plot(t, np.array(x)[:, 1], 'b-o', markersize=2, label='Gillespie solution')
+    plt.plot(t_r, np.array(x_r)[:, 1], 'r-', label='Mean solution')
+    plt.grid()
+    plt.legend()
+    plt.savefig('../pictures/lab7_eq_2_2.pdf', format = 'pdf')
 
 
 if __name__ == '__main__':
