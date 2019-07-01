@@ -10,7 +10,25 @@ from lab3 import rungeKuttaMethod
 
 
 def naive_solver(initial_point, max_time, inc_rules, dec_rules):
-    pass
+    assert len(inc_rules) == len(dec_rules) == 1
+    assert len(initial_point) == len(dec_rules)
+    time = 0.
+    x = initial_point.copy()
+    x_s = [initial_point]
+    step = 1 / dec_rules[0](x) / 100
+    times = [0.]
+    while time < max_time:
+        a = dec_rules[0](x)
+        r = np.random.random()
+        if r < a*step:
+            x[0] -= 1
+        time += step
+        x_s.append(x.copy())
+        times.append(time)
+        if x[0] <= 0:
+            break
+
+    return times, x_s
 
 
 def gillespie_solver(initial_point, max_time, inc_rules, dec_rules):
@@ -31,7 +49,7 @@ def gillespie_solver(initial_point, max_time, inc_rules, dec_rules):
         if a_0 <= 0:
             break
         probs = np.array(v_plus + v_minus) / a_0
-        r1 = np.random.random() + 1e-12
+        r1 = max(np.random.random(), 1e-12)
         tao = np.log(1 / r1) / a_0
         time += tao
         idx = np.random.choice(2*len(initial_point), p=probs)
@@ -47,9 +65,14 @@ def gillespie_solver(initial_point, max_time, inc_rules, dec_rules):
 
 def main():
 
-    np.random.seed(100)
+    np.random.seed(1)
 
     t_r, x_r = rungeKuttaMethod(lambda x, t: -x, 0., 10., 100., 1e-4)
+
+    start = time.time()
+    t_n, x_n = naive_solver([100], 10, [lambda x: 0], [lambda x: x[0]])
+    end = time.time()
+    print('Naive solver time, 1d ', end - start)
 
     start = time.time()
     t, x = gillespie_solver([100], 10, [lambda x: 0], [lambda x: x[0]])
@@ -59,6 +82,7 @@ def main():
     plt.xlabel('$t$')
     plt.ylabel('$x(t)$')
     plt.plot(t, np.array(x).reshape(-1), 'b-o', markersize=2, label='Gillespie solution')
+    plt.plot(t_n, np.array(x_n).reshape(-1), 'g-', markersize=2, label='Naive solution')
     plt.plot(t_r, x_r, 'r-', label='Mean solution')
     plt.grid()
     plt.legend()
