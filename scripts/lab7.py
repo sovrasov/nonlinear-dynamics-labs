@@ -81,15 +81,18 @@ def main():
 
     plt.xlabel('$t$')
     plt.ylabel('$x(t)$')
-    plt.plot(t, np.array(x).reshape(-1), 'b-o', markersize=2, label='Gillespie solution')
-    plt.plot(t_n, np.array(x_n).reshape(-1), 'g-', markersize=2, label='Naive solution')
+    plt.plot(t, np.array(x).reshape(-1), 'b-o', markersize=2,
+             label='Gillespie solution')
+    plt.plot(t_n, np.array(x_n).reshape(-1), 'g-', markersize=2,
+             label='Naive solution')
     plt.plot(t_r, x_r, 'r-', label='Mean solution')
     plt.grid()
     plt.legend()
     plt.savefig('../pictures/lab7_eq_1.pdf', format = 'pdf')
     plt.clf()
 
-    t_r, x_r = rungeKuttaMethod(lambda x, t: np.array([2*(x[1] - x[0]**2), x[0]**2 - x[1]]),
+    t_r, x_r = rungeKuttaMethod(lambda x, t: np.array([2*(x[1] - x[0]**2),
+                                                      x[0]**2 - x[1]]),
                                 0., 6., np.array([100., 0]), 1e-4)
 
     start = time.time()
